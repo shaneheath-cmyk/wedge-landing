@@ -1,0 +1,981 @@
+<!DOCTYPE html>
+<html lang="en-AU">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Wedge — The Operating System for Australian SMEs</title>
+  <link rel="icon" href="https://media.base44.com/images/public/6a09c0c145d07632a00a058f/20832bca3_fav.png" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Bebas+Neue&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --gold: #C9A84C;
+      --gold-light: #E8C96A;
+      --gold-dark: #8B6914;
+      --black: #0A0A0A;
+      --dark: #111111;
+      --dark-2: #1A1A1A;
+      --dark-3: #222222;
+      --white: #F5F5F0;
+      --ecru: #E8E4DC;
+      --grey: #888888;
+      --muted: #555;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--black);
+      color: var(--white);
+      font-family: 'Montserrat', sans-serif;
+      overflow-x: hidden;
+    }
+
+    ::-webkit-scrollbar { width: 4px; }
+    ::-webkit-scrollbar-track { background: var(--black); }
+    ::-webkit-scrollbar-thumb { background: var(--gold-dark); }
+
+    /* ── WATERMARK ── */
+    .logo-watermark {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      width: 55vw;
+      max-width: 650px;
+      opacity: 0.03;
+      pointer-events: none;
+      z-index: 0;
+      user-select: none;
+    }
+
+    /* ── NAV ── */
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 22px 60px;
+      background: linear-gradient(to bottom, rgba(0,0,0,0.7), transparent);
+      transition: background 0.35s, padding 0.35s;
+    }
+    nav.scrolled {
+      background: rgba(10,10,10,0.97);
+      border-bottom: 1px solid rgba(201,168,76,0.15);
+      padding: 16px 60px;
+    }
+    .nav-brand {
+      display: flex;
+      align-items: baseline;
+      gap: 10px;
+    }
+    .nav-wordmark {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.9rem;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+    }
+    .nav-by {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--white);
+      opacity: 0.4;
+    }
+    .nav-links { display: flex; gap: 32px; align-items: center; }
+    .nav-links a {
+      color: var(--white);
+      text-decoration: none;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      opacity: 0.7;
+      transition: opacity 0.2s, color 0.2s;
+    }
+    .nav-links a:hover { opacity: 1; color: var(--gold); }
+    .nav-cta {
+      border: 1px solid var(--gold) !important;
+      color: var(--gold) !important;
+      padding: 10px 26px;
+      opacity: 1 !important;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--gold) !important; color: var(--black) !important; }
+
+    /* ── HERO ── */
+    .hero {
+      position: relative;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      overflow: hidden;
+    }
+    .hero-bg {
+      position: absolute;
+      inset: 0;
+      background-image: url('https://media.base44.com/images/public/6a09c0c145d07632a00a058f/02515d1d4_phalanxdigitalHQ.jpg');
+      background-size: cover;
+      background-position: center top;
+      filter: brightness(0.55);
+    }
+    .hero-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to right, rgba(0,0,0,0.85) 40%, rgba(0,0,0,0.15) 100%);
+    }
+    .hero-overlay-bottom {
+      position: absolute;
+      bottom: 0; left: 0; right: 0;
+      height: 220px;
+      background: linear-gradient(to top, var(--black), transparent);
+    }
+    .hero-content {
+      position: relative;
+      z-index: 2;
+      padding: 0 60px;
+      max-width: 760px;
+    }
+    .hero-eyebrow {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 28px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+    .hero-eyebrow::before {
+      content: '';
+      display: block;
+      width: 40px;
+      height: 1px;
+      background: var(--gold);
+    }
+    .hero h1 {
+      font-size: clamp(44px, 6.5vw, 86px);
+      font-weight: 900;
+      line-height: 1.0;
+      letter-spacing: -1.5px;
+      margin-bottom: 28px;
+      color: var(--white);
+    }
+    .hero h1 span { color: var(--gold); }
+    .hero-sub {
+      font-size: 15px;
+      font-weight: 300;
+      line-height: 1.85;
+      color: rgba(245,245,240,0.7);
+      margin-bottom: 48px;
+      max-width: 540px;
+    }
+    .hero-btns { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 56px; }
+    .btn-primary {
+      display: inline-block;
+      background: var(--gold);
+      color: var(--black);
+      padding: 16px 40px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: background 0.2s, transform 0.2s;
+    }
+    .btn-primary:hover { background: var(--gold-light); transform: translateY(-2px); }
+    .btn-ghost {
+      display: inline-block;
+      border: 1px solid rgba(201,168,76,0.45);
+      color: var(--gold);
+      padding: 16px 40px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      transition: border-color 0.2s, background 0.2s;
+    }
+    .btn-ghost:hover { border-color: var(--gold); background: rgba(201,168,76,0.08); }
+
+    .hero-stats {
+      display: flex;
+      gap: 48px;
+      flex-wrap: wrap;
+    }
+    .stat-block {}
+    .stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.2rem;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+    .stat-label {
+      font-size: 10px;
+      font-weight: 600;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--white);
+      opacity: 0.4;
+      margin-top: 4px;
+    }
+
+    /* ── REPLACES BAND ── */
+    .replaces {
+      position: relative;
+      z-index: 1;
+      padding: 22px 60px;
+      background: rgba(201,168,76,0.06);
+      border-top: 1px solid rgba(201,168,76,0.12);
+      border-bottom: 1px solid rgba(201,168,76,0.12);
+      display: flex;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+    .replaces-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--grey);
+      white-space: nowrap;
+    }
+    .replaces-items {
+      display: flex;
+      gap: 28px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .replaces-item {
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--white);
+      opacity: 0.3;
+      letter-spacing: 1px;
+      text-decoration: line-through;
+      text-decoration-color: rgba(201,168,76,0.35);
+    }
+
+    /* ── SECTIONS ── */
+    section { padding: 100px 60px; position: relative; z-index: 1; }
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-bottom: 16px;
+    }
+    .section-title {
+      font-size: clamp(30px, 4vw, 54px);
+      font-weight: 800;
+      line-height: 1.1;
+      letter-spacing: -0.5px;
+      margin-bottom: 18px;
+    }
+    .section-sub {
+      font-size: 14px;
+      font-weight: 300;
+      color: rgba(245,245,240,0.6);
+      line-height: 1.85;
+      max-width: 560px;
+      margin-bottom: 60px;
+    }
+
+    /* ── FEATURES ── */
+    .features { background: var(--dark); }
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 2px;
+      background: rgba(201,168,76,0.06);
+    }
+    .feature-card {
+      background: var(--dark-2);
+      padding: 2.25rem;
+      transition: background 0.2s;
+    }
+    .feature-card:hover { background: var(--dark-3); }
+    .feature-icon {
+      font-size: 1.6rem;
+      margin-bottom: 1.1rem;
+    }
+    .feature-card h3 {
+      font-family: 'Bebas Neue', sans-serif;
+      letter-spacing: 0.1em;
+      font-size: 1.1rem;
+      color: var(--gold);
+      margin-bottom: 0.6rem;
+    }
+    .feature-card p {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--white);
+      opacity: 0.55;
+      line-height: 1.7;
+    }
+
+    /* ── STATEMENT BAND ── */
+    .statement {
+      background: var(--gold);
+      padding: 64px 60px;
+      text-align: center;
+      position: relative;
+      z-index: 1;
+    }
+    .statement-line {
+      display: block;
+      font-size: clamp(30px, 4.5vw, 58px);
+      font-weight: 900;
+      color: var(--black);
+      letter-spacing: -0.5px;
+      line-height: 1.1;
+    }
+    .statement p {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(10,10,10,0.5);
+      margin-top: 18px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+    }
+
+    /* ── AGENTS ── */
+    .agents { background: var(--black); }
+    .agents-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2px;
+      background: rgba(201,168,76,0.06);
+    }
+    .agent-card {
+      background: var(--dark-2);
+      padding: 2.5rem;
+      position: relative;
+      transition: background 0.2s;
+    }
+    .agent-card:hover { background: var(--dark-3); }
+    .agent-tier {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.65;
+      margin-bottom: 12px;
+    }
+    .agent-card h3 {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 1.9rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      color: var(--white);
+    }
+    .agent-role {
+      font-size: 11px;
+      font-weight: 500;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--white);
+      opacity: 0.4;
+      margin-bottom: 16px;
+    }
+    .agent-card p {
+      font-size: 13px;
+      font-weight: 300;
+      color: var(--white);
+      opacity: 0.6;
+      line-height: 1.75;
+    }
+    .agent-tagline {
+      margin-top: 20px;
+      font-family: 'Cormorant Garamond', serif;
+      font-style: italic;
+      font-size: 1rem;
+      color: var(--gold);
+      opacity: 0.85;
+    }
+
+    /* ── PRICING ── */
+    .pricing { background: var(--dark); }
+    .pricing-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(210px, 1fr));
+      gap: 2px;
+      background: rgba(201,168,76,0.08);
+    }
+    .pricing-card {
+      background: var(--dark-2);
+      padding: 2rem 1.75rem;
+      display: flex;
+      flex-direction: column;
+      position: relative;
+    }
+    .pricing-card.featured {
+      background: var(--dark-3);
+      border-top: 2px solid var(--gold);
+    }
+    .pricing-card.featured::before {
+      content: 'MOST POPULAR';
+      position: absolute;
+      top: -1px;
+      right: 1.5rem;
+      background: var(--gold);
+      color: var(--black);
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 0.62rem;
+      letter-spacing: 0.2em;
+      padding: 3px 8px;
+    }
+    .pricing-product {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.6;
+      margin-bottom: 6px;
+    }
+    .pricing-tier {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.7rem;
+      letter-spacing: 0.08em;
+      color: var(--white);
+      margin-bottom: 14px;
+    }
+    .pricing-price {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: 2.6rem;
+      font-weight: 700;
+      color: var(--gold);
+      line-height: 1;
+      margin-bottom: 4px;
+    }
+    .pricing-price small {
+      font-size: 1rem;
+      color: var(--white);
+      opacity: 0.35;
+      font-family: 'Montserrat', sans-serif;
+      font-weight: 400;
+    }
+    .pricing-segment {
+      font-size: 11px;
+      font-weight: 300;
+      color: var(--white);
+      opacity: 0.4;
+      margin-bottom: 20px;
+      line-height: 1.5;
+    }
+    .pricing-features {
+      list-style: none;
+      flex: 1;
+      margin-bottom: 24px;
+    }
+    .pricing-features li {
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--white);
+      opacity: 0.6;
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+    }
+    .pricing-features li::before { content: '—'; color: var(--gold); opacity: 0.5; flex-shrink: 0; }
+    .pricing-agent {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.65;
+      margin-bottom: 18px;
+    }
+    .pricing-btn {
+      display: block;
+      text-align: center;
+      padding: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2.5px;
+      text-transform: uppercase;
+      text-decoration: none;
+      border: 1px solid rgba(201,168,76,0.35);
+      color: var(--gold);
+      transition: all 0.2s;
+    }
+    .pricing-btn:hover, .pricing-card.featured .pricing-btn {
+      background: var(--gold);
+      color: var(--black);
+      border-color: var(--gold);
+    }
+
+    /* ── CASE STUDY ── */
+    .case { background: var(--black); padding: 100px 60px; }
+    .case-inner {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 80px;
+      align-items: center;
+      max-width: 1200px;
+    }
+    .case-quote {
+      border-left: 3px solid var(--gold);
+      padding-left: 36px;
+    }
+    .case-quote blockquote {
+      font-family: 'Cormorant Garamond', serif;
+      font-size: clamp(1.3rem, 2vw, 1.65rem);
+      font-style: italic;
+      line-height: 1.6;
+      color: var(--white);
+      opacity: 0.9;
+      margin-bottom: 20px;
+    }
+    .case-quote cite {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--gold);
+      font-style: normal;
+      opacity: 0.8;
+    }
+    .case-stats {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 24px;
+    }
+    .case-stat {
+      padding: 24px;
+      background: var(--dark-2);
+      border: 1px solid rgba(201,168,76,0.1);
+    }
+    .case-stat-num {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 2.8rem;
+      color: var(--gold);
+      letter-spacing: 0.04em;
+      line-height: 1;
+    }
+    .case-stat-label {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--white);
+      opacity: 0.4;
+      margin-top: 6px;
+      letter-spacing: 1.5px;
+      text-transform: uppercase;
+    }
+
+    /* ── FOOTER ── */
+    footer {
+      background: var(--dark);
+      padding: 56px 60px 40px;
+      border-top: 1px solid rgba(201,168,76,0.1);
+    }
+    .footer-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 40px;
+      flex-wrap: wrap;
+      gap: 32px;
+    }
+    .footer-brand {}
+    .footer-wordmark {
+      font-family: 'Bebas Neue', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 0.12em;
+      color: var(--gold);
+    }
+    .footer-sub {
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--white);
+      opacity: 0.3;
+      margin-top: 6px;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+    }
+    .footer-links {
+      display: flex;
+      gap: 40px;
+      flex-wrap: wrap;
+    }
+    .footer-col h4 {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--gold);
+      opacity: 0.7;
+      margin-bottom: 14px;
+    }
+    .footer-col a {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      color: var(--white);
+      opacity: 0.45;
+      text-decoration: none;
+      margin-bottom: 8px;
+      transition: opacity 0.2s;
+    }
+    .footer-col a:hover { opacity: 0.9; }
+    .footer-bottom {
+      border-top: 1px solid rgba(255,255,255,0.05);
+      padding-top: 24px;
+      display: flex;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 12px;
+    }
+    .footer-bottom span {
+      font-size: 11px;
+      font-weight: 400;
+      color: var(--white);
+      opacity: 0.25;
+      letter-spacing: 1px;
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      nav, .replaces, section, .statement, .case { padding-left: 24px; padding-right: 24px; }
+      .hero-content { padding: 0 24px; }
+      nav { padding: 16px 24px; }
+      nav.scrolled { padding: 12px 24px; }
+      .hero h1 { font-size: 2.6rem; }
+      .pricing-grid { grid-template-columns: 1fr 1fr; }
+      .case-inner { grid-template-columns: 1fr; gap: 40px; }
+      footer { padding: 40px 24px 28px; }
+      .footer-top { flex-direction: column; }
+    }
+    @media (max-width: 520px) {
+      .pricing-grid { grid-template-columns: 1fr; }
+      .nav-links { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- Watermark -->
+<img class="logo-watermark" src="https://media.base44.com/images/public/6a09c0c145d07632a00a058f/20832bca3_fav.png" alt="" />
+
+<!-- NAV -->
+<nav id="navbar">
+  <div class="nav-brand">
+    <span class="nav-wordmark">WEDGE</span>
+    <span class="nav-by">by Phalanx Digital</span>
+  </div>
+  <div class="nav-links">
+    <a href="#features">Platform</a>
+    <a href="#agents">AI Agents</a>
+    <a href="#pricing">Pricing</a>
+    <a href="#contact">Contact</a>
+    <a href="#pricing" class="nav-cta">Start Free Trial</a>
+  </div>
+</nav>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-overlay-bottom"></div>
+  <div class="hero-content">
+    <div class="hero-eyebrow">Australian Business Operations Platform</div>
+    <h1>Run your<br />entire business.<br /><span>One platform.</span></h1>
+    <p class="hero-sub">Wedge replaces Xero, Deputy, monday.com and Cin7 — purpose-built for Australian trades, construction, and growing SMEs. From $49/month.</p>
+    <div class="hero-btns">
+      <a href="#pricing" class="btn-primary">Start Free Trial</a>
+      <a href="#features" class="btn-ghost">See How It Works</a>
+    </div>
+    <div class="hero-stats">
+      <div class="stat-block">
+        <div class="stat-num">$49</div>
+        <div class="stat-label">Starting / month</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num">5</div>
+        <div class="stat-label">Tools replaced</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num">3</div>
+        <div class="stat-label">AI Agents included</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num">AU</div>
+        <div class="stat-label">Built for Australia</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- REPLACES BAND -->
+<div class="replaces">
+  <div class="replaces-label">Replaces</div>
+  <div class="replaces-items">
+    <span class="replaces-item">Xero</span>
+    <span class="replaces-item">Deputy</span>
+    <span class="replaces-item">monday.com</span>
+    <span class="replaces-item">Cin7</span>
+    <span class="replaces-item">ServiceM8</span>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<section class="features" id="features">
+  <div class="section-label">Platform</div>
+  <div class="section-title">Everything your business needs<br />to operate at full capacity.</div>
+  <p class="section-sub">From asset registers to BAS reporting — one connected system, no integrations required.</p>
+  <div class="features-grid">
+    <div class="feature-card">
+      <div class="feature-icon">📦</div>
+      <h3>Asset & Inventory</h3>
+      <p>Track every asset, product, and stock movement across all locations. Real-time visibility, no spreadsheets.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🏗️</div>
+      <h3>Projects & WBS</h3>
+      <p>Full project management with work breakdown structure, cost lines, milestones, and team assignments.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">💳</div>
+      <h3>Invoicing & AR/AP</h3>
+      <p>Raise invoices, track payments, manage accounts receivable and payable. BAS-ready from day one.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📍</div>
+      <h3>GPS Timesheets</h3>
+      <p>Location-verified workforce time tracking. STP-compliant payroll built in at Pro tier and above.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📊</div>
+      <h3>BAS Reporting</h3>
+      <p>Automated BAS preparation, GST reconciliation, and lodgement-ready reporting. Built for the ATO.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🔐</div>
+      <h3>Vault Manager</h3>
+      <p>Encrypted credential storage, full audit trail, and compliance reporting for enterprise and government clients.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">🎫</div>
+      <h3>Ticketing</h3>
+      <p>Internal and client-facing ticketing with SLA tracking, escalation rules, and maintenance logs.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">📁</div>
+      <h3>Workforce Documents</h3>
+      <p>Contracts, onboarding packs, compliance docs — stored, versioned, and accessible anywhere.</p>
+    </div>
+  </div>
+</section>
+
+<!-- STATEMENT BAND -->
+<div class="statement">
+  <span class="statement-line">Stop paying for 6 tools.</span>
+  <span class="statement-line">Start operating like an enterprise.</span>
+  <p>Wedge · Purpose-built for Australian SMEs</p>
+</div>
+
+<!-- AGENTS -->
+<section class="agents" id="agents">
+  <div class="section-label">AI Agents</div>
+  <div class="section-title">Intelligence built in<br />at every tier.</div>
+  <p class="section-sub">Not bolt-on chatbots. Purpose-built agents that handle real operational work — from answering calls to closing deals.</p>
+  <div class="agents-grid">
+    <div class="agent-card">
+      <div class="agent-tier">Starter & above</div>
+      <h3>AI Receptionist</h3>
+      <div class="agent-role">Inbound Lead Capture & Triage</div>
+      <p>Handles web chat and voice inbound 24/7. Greets callers, captures lead details, logs to CRM, sends instant notifications. Never misses an enquiry.</p>
+      <div class="agent-tagline">"Always on. Never misses a lead."</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-tier">Business & above</div>
+      <h3>Maren</h3>
+      <div class="agent-role">Client Relations Manager</div>
+      <p>Manages email communications, onboarding sequences, follow-up scheduling, and account management. Your clients feel looked after without you lifting a finger.</p>
+      <div class="agent-tagline">"Your clients feel looked after."</div>
+    </div>
+    <div class="agent-card">
+      <div class="agent-tier">Sentinel & above</div>
+      <h3>Konstantin</h3>
+      <div class="agent-role">Executive Director</div>
+      <p>Executive outreach, strategic communications, board-level reporting, and stakeholder briefings. Enterprise-grade intelligence in your corner.</p>
+      <div class="agent-tagline">"Strategic power at your command."</div>
+    </div>
+  </div>
+</section>
+
+<!-- PRICING -->
+<section class="pricing" id="pricing">
+  <div class="section-label">Pricing</div>
+  <div class="section-title">Simple, transparent pricing.<br />No lock-in contracts.</div>
+  <p class="section-sub">Two products. Five tiers. Every business finds its fit.</p>
+  <div class="pricing-grid">
+    <!-- WEDGE STARTER -->
+    <div class="pricing-card">
+      <div class="pricing-product">Wedge</div>
+      <div class="pricing-tier">Starter</div>
+      <div class="pricing-price">$49<small>/mo</small></div>
+      <div class="pricing-segment">Sole traders &amp; small teams</div>
+      <ul class="pricing-features">
+        <li>Asset &amp; inventory tracking</li>
+        <li>Invoicing &amp; AR/AP</li>
+        <li>GPS timesheets</li>
+        <li>BAS reporting</li>
+        <li>AI Receptionist agent</li>
+      </ul>
+      <div class="pricing-agent">AI Receptionist</div>
+      <a href="#contact" class="pricing-btn">Get Started</a>
+    </div>
+    <!-- WEDGE BUSINESS -->
+    <div class="pricing-card featured">
+      <div class="pricing-product">Wedge</div>
+      <div class="pricing-tier">Business</div>
+      <div class="pricing-price">$149<small>/mo</small></div>
+      <div class="pricing-segment">Growing SMEs &amp; trades businesses</div>
+      <ul class="pricing-features">
+        <li>Everything in Starter</li>
+        <li>Projects &amp; WBS</li>
+        <li>Payroll (STP-compliant)</li>
+        <li>Ticketing system</li>
+        <li>Maren — Client Relations</li>
+      </ul>
+      <div class="pricing-agent">Maren + AI Receptionist</div>
+      <a href="#contact" class="pricing-btn">Get Started</a>
+    </div>
+    <!-- BASTION PRO -->
+    <div class="pricing-card">
+      <div class="pricing-product">Wedge Bastion</div>
+      <div class="pricing-tier">Pro</div>
+      <div class="pricing-price">$349<small>/mo</small></div>
+      <div class="pricing-segment">Enterprise &amp; multi-site operations</div>
+      <ul class="pricing-features">
+        <li>Everything in Business</li>
+        <li>Vault Manager</li>
+        <li>Workforce documents</li>
+        <li>Advanced compliance</li>
+        <li>Konstantin — Exec Director</li>
+      </ul>
+      <div class="pricing-agent">Konstantin + Maren + Receptionist</div>
+      <a href="#contact" class="pricing-btn">Get Started</a>
+    </div>
+    <!-- BASTION SENTINEL -->
+    <div class="pricing-card">
+      <div class="pricing-product">Wedge Bastion</div>
+      <div class="pricing-tier">Sentinel</div>
+      <div class="pricing-price">$749<small>/mo</small></div>
+      <div class="pricing-segment">Government, defence &amp; regulated industries</div>
+      <ul class="pricing-features">
+        <li>Everything in Pro</li>
+        <li>Full audit trail</li>
+        <li>Dedicated onboarding</li>
+        <li>SLA-backed support</li>
+        <li>Custom agent config</li>
+      </ul>
+      <div class="pricing-agent">Full agent stack + custom config</div>
+      <a href="#contact" class="pricing-btn">Get Started</a>
+    </div>
+    <!-- RESELLER -->
+    <div class="pricing-card">
+      <div class="pricing-product">Wedge Bastion</div>
+      <div class="pricing-tier">Reseller</div>
+      <div class="pricing-price">POA</div>
+      <div class="pricing-segment">Accountants, MSPs &amp; white-label partners</div>
+      <ul class="pricing-features">
+        <li>Multi-client management</li>
+        <li>White-label ready</li>
+        <li>Revenue sharing model</li>
+        <li>Partner portal access</li>
+        <li>Dedicated account manager</li>
+      </ul>
+      <div class="pricing-agent">Full stack — white-label</div>
+      <a href="#contact" class="pricing-btn">Contact Us</a>
+    </div>
+  </div>
+</section>
+
+<!-- CASE STUDY -->
+<section class="case" id="contact">
+  <div class="case-inner">
+    <div class="case-quote">
+      <div class="section-label">Field Trial</div>
+      <blockquote>"Wedge replaced three separate tools we were running. The GPS timesheets alone saved us 4 hours a week in admin. The AI agent handles our enquiries while we're on site."</blockquote>
+      <cite>Clements Plumbing · Goulburn, NSW · Wedge Business Trial</cite>
+    </div>
+    <div class="case-stats">
+      <div class="case-stat">
+        <div class="case-stat-num">4h</div>
+        <div class="case-stat-label">Saved weekly</div>
+      </div>
+      <div class="case-stat">
+        <div class="case-stat-num">3</div>
+        <div class="case-stat-label">Tools replaced</div>
+      </div>
+      <div class="case-stat">
+        <div class="case-stat-num">100%</div>
+        <div class="case-stat-label">Enquiries captured</div>
+      </div>
+      <div class="case-stat">
+        <div class="case-stat-num">Day 1</div>
+        <div class="case-stat-label">Live & operational</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-top">
+    <div class="footer-brand">
+      <div class="footer-wordmark">WEDGE</div>
+      <div class="footer-sub">by Phalanx Digital · Australia</div>
+    </div>
+    <div class="footer-links">
+      <div class="footer-col">
+        <h4>Platform</h4>
+        <a href="#features">Features</a>
+        <a href="#agents">AI Agents</a>
+        <a href="#pricing">Pricing</a>
+      </div>
+      <div class="footer-col">
+        <h4>Company</h4>
+        <a href="#">About</a>
+        <a href="#">Phalanx Digital</a>
+        <a href="#">Contact</a>
+      </div>
+      <div class="footer-col">
+        <h4>Legal</h4>
+        <a href="#">Privacy Policy</a>
+        <a href="#">Terms of Service</a>
+      </div>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <span>© 2026 Phalanx Digital Pty Ltd · ABN pending · All rights reserved</span>
+    <span>wedge.phalanxprime.com.au</span>
+  </div>
+</footer>
+
+<script>
+  // Sticky nav scroll effect
+  const nav = document.getElementById('navbar');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+</script>
+
+</body>
+</html>
